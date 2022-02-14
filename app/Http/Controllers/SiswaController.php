@@ -98,7 +98,30 @@ class SiswaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $siswa = Siswa::findOrFail($id);
+        
+        $validator = Validator::make($request->all(), [
+            'nis' => ['required', 'numeric'],
+            'nama' => ['required'],
+            'kelas' => ['required'],
+            'no_absen' => ['required', 'numeric']
+        ]);
+        if ($validator -> fails()){
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        try {
+            $siswa->update($request->all());
+            $response = [
+                'message' => 'Data Berhasil di Update',
+                'data' => $siswa
+            ];
+            return response()->json($response, Response::HTTP_OK);
+
+        }catch (QueryException $exc){
+            return response()->json([
+                'message' => 'failed' . $exc->errorInfo
+            ]);
+        }
     }
 
     /**
