@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Siswa;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class SiswaController extends Controller
 {
@@ -13,7 +15,12 @@ class SiswaController extends Controller
      */
     public function index()
     {
-        //
+        $siswas = Siswa::orderBy('nis', 'desc')->get();
+        $response = [
+            'message' => 'Data berhasil ditampilkan',
+            'data' => $siswas
+        ];
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -34,7 +41,7 @@ class SiswaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
