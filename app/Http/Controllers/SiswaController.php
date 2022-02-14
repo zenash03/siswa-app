@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Siswa;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class SiswaController extends Controller
@@ -41,7 +43,28 @@ class SiswaController extends Controller
      */
     public function store(Request $request)
     {
-        
+        $validator = Validator::make($request->all(), [
+            'nis' => ['required', 'numeric'],
+            'nama' => ['required'],
+            'kelas' => ['required'],
+            'no_absen' => ['required', 'numeric']
+        ]);
+        if ($validator -> fails()){
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        try {
+            $siswa = Siswa::create($request->all());
+            $response = [
+                'message' => 'Data Berhasil ditambahkan',
+                'data' => $siswa
+            ];
+            return response()->json($response, Response::HTTP_CREATED);
+
+        }catch (QueryException $exc){
+            return response()->json([
+                'message' => 'failed' . $exc->errorInfo
+            ]);
+        }
     }
 
     /**
