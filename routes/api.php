@@ -19,5 +19,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/siswa', [SiswaController::class, 'index']);
-Route::post('/siswa', [SiswaController::class, 'store']);
+// Route::get('/siswa', [SiswaController::class, 'index']);
+// Route::post('/siswa', [SiswaController::class, 'store']);
+// Route::put('/siswa/{id}', [SiswaController::class, 'update']);
+// Route::delete('/siswa/{id}', [TransactionController::class, 'destroy']);
+
+Route::resource('/siswa', SiswaController::class)->except(['create','edit']);

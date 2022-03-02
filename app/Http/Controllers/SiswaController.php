@@ -17,7 +17,7 @@ class SiswaController extends Controller
      */
     public function index()
     {
-        $siswas = Siswa::orderBy('nis', 'desc')->get();
+        $siswas = Siswa::orderBy('no_absen', 'asc')->get();
         $response = [
             'message' => 'Data berhasil ditampilkan',
             'data' => $siswas
@@ -44,10 +44,11 @@ class SiswaController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nis' => ['required', 'numeric'],
             'nama' => ['required'],
-            'kelas' => ['required'],
-            'no_absen' => ['required', 'numeric']
+            'kelas' => ['required', 'numeric'],
+            'no_absen' => ['required', 'numeric'],
+            'jurusan' => ['required' , 'in:TKJ,AKL,BDP'],
+            'deskripsi' => ['required'] 
         ]);
         if ($validator -> fails()){
             return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -75,7 +76,12 @@ class SiswaController extends Controller
      */
     public function show($id)
     {
-        //
+        $siswa = Siswa::findOrFail($id);
+        $response = [
+            'message' => 'Data ditemukan',
+            'data' => $siswa
+        ];
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
@@ -98,13 +104,14 @@ class SiswaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $siswa = Siswa::findOrFail($id);
+        $siswa = Siswa::where('id', $id)->firstOrFail();
         
         $validator = Validator::make($request->all(), [
-            'nis' => ['required', 'numeric'],
             'nama' => ['required'],
-            'kelas' => ['required'],
-            'no_absen' => ['required', 'numeric']
+            'kelas' => ['required', 'numeric'],
+            'no_absen' => ['required', 'numeric'],
+            'jurusan' => ['required' , 'in:TKJ,AKL,BDP'],
+            'deskripsi' => ['required'] 
         ]);
         if ($validator -> fails()){
             return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -132,6 +139,20 @@ class SiswaController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $siswa = Siswa::findOrFail($id);
+
+        try {
+            $siswa->delete();
+            $response = [
+                'message' => 'Siswa Deleted',
+            ];
+
+            return response()->json($response, Response::HTTP_OK);
+        }
+        catch(QueryException $e ) {
+            return response()->json([
+                'message' => 'Failed' . $e->errorInfo
+            ]);
+        }
     }
 }
